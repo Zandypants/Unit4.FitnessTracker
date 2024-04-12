@@ -52,11 +52,13 @@ app.post(API_URL + "/:tableName", async (req, res, next) => {
 });
 
 app.delete(API_URL + "/:tableName/:id", async (req, res, next) => {
+  const {tableName, id} = req.params;
+  const msgs = { failure: "Failed to delete", entry:`row ${id} from table ${tableName}`};
   try {
-    const {tableName, id} = req.params;
     const {rows: [row]} = await db.query(sql.deleteWhere(tableName, "id", id));
-    res.send(`${row ? "Sucessfully deleted" : "Failed to delete"} row ${id} from table ${tableName}!`);
+    res.send(`${row ? "Sucessfully deleted" : msgs.failure} ${msgs.entry}!`);
   } catch (error) {
+    res.send(`${msgs.failure} ${msgs.entry}!`);
     next(error);
   }
 });
